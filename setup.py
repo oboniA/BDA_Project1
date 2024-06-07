@@ -1,7 +1,9 @@
 '''
 1: function to create a text file from a list of URL 
 2: function that reads the text file 
+3: function to download a url
 '''
+from pytube import YouTube
 
 # defined list of 10 URLs
 url_list = [ 
@@ -29,16 +31,22 @@ def create_file(urllist, file_name):
 # TASK 2: reads urls from the txt file
 def readfile(file_name):
     print(f"\n Extracting urls....")
+
     with open(file_name, 'r') as readurlfile:
         url_list = [url.strip() for url in readurlfile.readlines()]
         for url in url_list:
             print(url)
-    
+            
     print(f'Extraction Completed.\n')
 
 
+# Task 3: setup for single video download 
+def video_download(url, download_path):
+    yt = YouTube(url)
+    stream = yt.streams.get_highest_resolution()
+    print(f"Downloading video: {yt.title}")
+    stream.download(output_path=download_path)
+    print(f"Download completed.")
 
-if __name__=="__main__":
-    filename='video_urls.txt'
-    create_file(url_list, filename)
-    readfile(filename)
+
+
