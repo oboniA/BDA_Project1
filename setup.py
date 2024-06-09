@@ -4,8 +4,9 @@
 3: function to download a url
 '''
 from pytube import YouTube
+import time
 
-# defined list of 10 URLs
+# TASK 1: defined list of 10 URLs
 url_list = [ 
 'https://www.youtube.com/watch?v=Salz7uGp72c',
 'https://www.youtube.com/watch?v=nwPMKcYEkmw&ab_channel=WaltDisneyStudios',
@@ -18,9 +19,7 @@ url_list = [
 'https://www.youtube.com/watch?v=rLXcLBfDwvE&ab_channel=TEDxTalks',
 'https://www.youtube.com/watch?v=0aqiPyTJv8E&ab_channel=BBCNews'
 ]
-
-
-# Task 1: generates a text file of a list of urls
+# generates a text file of a list of urls
 def create_file(urllist, file_name):
     # creates video_urls.txt file
     with open(file_name, 'w', encoding='utf-8') as urlfile:
@@ -31,22 +30,34 @@ def create_file(urllist, file_name):
 # TASK 2: reads urls from the txt file
 def readfile(file_name):
     print(f"\n Extracting urls....")
-
     with open(file_name, 'r') as readurlfile:
         url_list = [url.strip() for url in readurlfile.readlines()]
         for url in url_list:
             print(url)
-            
     print(f'Extraction Completed.\n')
 
 
-# Task 3: setup for single video download 
-def video_download(url, download_path):
-    yt = YouTube(url)
-    stream = yt.streams.get_highest_resolution()
-    print(f"Downloading video: {yt.title}")
-    stream.download(output_path=download_path)
-    print(f"Download completed.")
+# TASK 3: setup for single video download 
+def video_download(url, download_path, semaphore=None):
+    try:   
+        yt = YouTube(url)
+        
+        # acquires semaphore before download starts when semaphore available
+        if semaphore:
+            semaphore.acquire()
+
+        # downloads a video
+        stream = yt.streams.get_highest_resolution()
+        print(f"Download started at: {time.strftime('%H:%M:%S')} ..........{yt.title}")
+        stream.download(output_path=download_path)
+        print(f"{yt.title} Download completed ")
+    
+    finally:
+        # releases semaphore after download when semaphore available
+        if semaphore:
+            semaphore.release()
+
+
 
 
 
