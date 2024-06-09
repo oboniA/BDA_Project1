@@ -5,6 +5,8 @@
 '''
 from pytube import YouTube
 import time
+import threading
+from log_download import *
 
 # TASK 1: defined list of 10 URLs
 url_list = [ 
@@ -39,6 +41,10 @@ def readfile(file_name):
 
 # TASK 3: setup for single video download 
 def video_download(url, download_path, semaphore=None):
+
+    # calls the thread that is downloading current video
+    threadname = threading.current_thread().name
+
     try:   
         yt = YouTube(url)
         
@@ -51,7 +57,14 @@ def video_download(url, download_path, semaphore=None):
         print(f"Download started at: {time.strftime('%H:%M:%S')} ..........{yt.title}")
         stream.download(output_path=download_path)
         print(f"{yt.title} Download completed ")
+
+        # adds log to the logging txt file wghen download successful
+        log_of_downloads(url, download_success=True, thread_name=threadname)
     
+    except Exception as e:
+        # returns exception for unsuccessful downloads
+        log_of_downloads(url, download_success=False, thread_name=threadname)
+
     finally:
         # releases semaphore after download when semaphore available
         if semaphore:
