@@ -23,4 +23,6 @@ def audio_extraction(video_location, audio_location):
         video.audio.write_audiofile(out_path, codec='pcm_s16le')
 
         print(f'extraction complete')
-
+    
+    
+    print(f'extracted Audio files saved to {audio_location}.')
