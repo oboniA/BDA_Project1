@@ -13,13 +13,12 @@ def main():
     parallel_download(filename, output_dir)
 
     #Task 5
-    video_folder= "parallel_download_outputs"
-    audio_folder= "audio_outputs"
-    speech_folder = "speech_outputs"
-
+    video_folder= "./parallel_download_outputs"
+    audio_folder= "./Task5_downloads"
+    
     audio_extraction(video_folder, audio_folder)
-    speech_from_audio(audio_folder, speech_folder)
+    audio_transcription(audio_folder)
     
-    
+
 if __name__=="__main__":
     main()
