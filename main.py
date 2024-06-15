@@ -3,6 +3,7 @@ from setup import *
 from parallel import *
 from extract_audio import *
 from transcribe_audio import *
+from analyse_sentiments import *
 
 
 def main():
@@ -14,11 +15,12 @@ def main():
 
     #Task 5
     video_folder= "./parallel_download_outputs"
-    audio_folder= "./Task5_downloads"
-    
-    audio_extraction(video_folder, audio_folder)
-    audio_transcription(audio_folder)
-    
+    sub_directory = "./Task5_downloads"
 
+    audio_extraction(video_folder, sub_directory)
+    audio_transcription(sub_directory)
+    sentiment_analysis(sub_directory)
+    
+    
 if __name__=="__main__":
     main()

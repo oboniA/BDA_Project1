@@ -1,0 +1,3 @@
+'File': The Busy Life of the Sloth  BBC Earth.txt
+'Polarity': -0.0027669051627384955
+'Subjectivity': 0.5221450617283953
