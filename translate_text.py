@@ -46,7 +46,8 @@ def translate_to_spanish(speech_location):
         text_files= [file for file in os.listdir(subdir) 
                      if file.endswith('.txt') 
                      and '_sentiment_analysis' not in file
-                     and '_Spanish.txt' not in file] 
+                     and '_Spanish.txt' not in file
+                     and '_emotions.txt' not in file] 
         for text_file in text_files:
             thread= threading.Thread(target=text_translation, args=(text_file, subdir))
             threads.append(thread)

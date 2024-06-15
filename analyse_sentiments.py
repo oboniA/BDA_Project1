@@ -44,7 +44,8 @@ def sentiment_analysis(speech_location):
         text_files= [file for file in os.listdir(subdir) 
                      if file.endswith('.txt') 
                      and '_sentiment_analysis.txt' not in file
-                     and '_Spanish.txt' not in file] 
+                     and '_Spanish.txt' not in file
+                     and '_emotions.txt' not in file] 
         for text_file in text_files:
             thread= threading.Thread(target=text_analysis, args=(text_file, subdir))
             threads.append(thread)
