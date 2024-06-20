@@ -22,6 +22,10 @@ def main():
     sentiment_analysis(sub_folder)
     translate_to_spanish(sub_folder)
     emotion_extraction(sub_folder)
+
+    audio_extraction_serial(sub_folder)
+    audio_extraction_multiprocessing(sub_folder)
+    audio_extraction_concurrency(sub_folder)
     
 
 if __name__=="__main__":

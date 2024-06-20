@@ -51,7 +51,7 @@ def audio_transcription(audio_location):
     threads=[]
     for subdir in subdirs:
         audio_files= [file for file in os.listdir(subdir) 
-                      if file.endswith('.wav')]
+                      if file.endswith('_.wav')]
         for audio_file in audio_files:
             thread= threading.Thread(target=transcribe_audio, args=(audio_file, subdir))
             threads.append(thread)

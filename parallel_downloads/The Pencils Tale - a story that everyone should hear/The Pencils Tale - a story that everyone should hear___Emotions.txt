@@ -1,0 +1,2 @@
+Detected Emotional Frequencies:
+{'fear': 0.03125, 'anger': 0.03125, 'anticip': 0.0, 'trust': 0.125, 'surprise': 0.09375, 'positive': 0.28125, 'negative': 0.125, 'sadness': 0.09375, 'disgust': 0.03125, 'joy': 0.0625, 'anticipation': 0.125}
