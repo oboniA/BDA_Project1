@@ -9,14 +9,13 @@ def text_translation(speech_file, speech_location):
     """Translation process for each transciption file to spanish"""
 
     try:
-        # constructs text path from folder name and file name
+        # constructs text path from folder name and file name of speech filr to read
         speech_path= os.path.join(speech_location, speech_file)
-
-        # read speech file containing audio transcription
         with open(speech_path, 'r') as sfile:
             text = sfile.read()
 
         # translation process
+        print(f" Translation in progress for {speech_file}......")
         blob = TextBlob(text)
         translator= Translator()
         blob_translated=translator.translate(blob.raw, dest='es') # translated result
@@ -27,10 +26,10 @@ def text_translation(speech_file, speech_location):
         out_path = os.path.join(speech_location, text_file)
         with open(out_path, 'w', encoding="utf-8") as f:
             f.write(translated_str)
-        print(f'\nTranslation complete for {speech_file}; Worker Thread: {threading.current_thread().name}')
+        print(f' Translation complete for {speech_file}; Worker Thread: {threading.current_thread().name}')
             
     except Exception as e:
-        print(f'Error in Translating {speech_file}: {e}')
+        print(f' Error in Translating {speech_file}: {e}')
 
 
 def translate_to_spanish(speech_location):
@@ -44,10 +43,7 @@ def translate_to_spanish(speech_location):
     start= time.perf_counter()
     for subdir in subdirs:
         text_files= [file for file in os.listdir(subdir) 
-                     if file.endswith('.txt') 
-                     and '_sentiment_analysis' not in file
-                     and '_Spanish.txt' not in file
-                     and '_emotions.txt' not in file] 
+                     if file.endswith('_.txt') ]
         for text_file in text_files:
             thread= threading.Thread(target=text_translation, args=(text_file, subdir))
             threads.append(thread)
@@ -57,7 +53,7 @@ def translate_to_spanish(speech_location):
         thread.join()
 
     end=time.perf_counter()
-    print(f'Translation finished in {end-start} seconds\n')
+    print(f' Translation finished in {end-start} seconds\n')
 
     
 

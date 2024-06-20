@@ -11,20 +11,18 @@ from extract_emotions import *
 def main():
     # defined text file name
     filename='video_urls.txt'
+    sub_folder= "./parallel_downloads"
 
     #Task 3
-    parallel_download(filename, output_dir)
+    parallel_download(filename, sub_folder)
 
     #Task 5
-    video_folder= "./parallel_download_outputs"
-    sub_directory = "./Task5_downloads"
+    audio_extraction(sub_folder)
+    audio_transcription(sub_folder)
+    sentiment_analysis(sub_folder)
+    translate_to_spanish(sub_folder)
+    emotion_extraction(sub_folder)
+    
 
-    audio_extraction(video_folder, sub_directory)
-    audio_transcription(sub_directory)
-    sentiment_analysis(sub_directory)
-    translate_to_spanish(sub_directory)
-    emotion_extraction(sub_directory)
-    
-    
 if __name__=="__main__":
     main()

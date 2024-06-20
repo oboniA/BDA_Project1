@@ -1,36 +1,84 @@
 # TASK 3
-from setup import *
 import time
 import os
 import threading 
+from pytube import YouTube
 from concurrent.futures import ThreadPoolExecutor
+from log_download import *
 
-# generated directory to store downloaded videos
-output_dir='parallel_download_outputs'
-os.makedirs(output_dir, exist_ok=True)
+
+def folder_by_title(download_path, video_title):
+    """Creates a folder for each video"""
+
+    video_folder= video_title.rsplit('.', 1)[0]
+    folder_path= os.path.join(download_path, video_folder)
+    os.makedirs(folder_path, exist_ok=True)
+    
+    return folder_path
+
+
+# TASK 3: setup for single video download 
+def video_download(url, download_path, semaphore=None):
+    """Downloads a video using a YouTube URL"""
+
+    # calls the thread that is downloading current video
+    threadname = threading.current_thread().name
+
+    try:   
+        
+        # acquires semaphore before download starts when semaphore available
+        if semaphore:
+            semaphore.acquire()
+
+         # downloads a video
+        yt = YouTube(url)
+        stream = yt.streams.get_highest_resolution()
+
+        # makes folder by title of video and downloaded video saved in the folder
+        video_title= stream.default_filename
+        folder_path= folder_by_title(download_path, video_title)
+        print(f" Download started at: {time.strftime('%H:%M:%S')} ..........{yt.title}")
+        stream.download(output_path=folder_path)
+        print(f" {yt.title} Download completed ")
+
+        # adds log to the logging txt file wghen download successful
+        log_of_downloads(url, download_success=True, thread_name=threadname)
+    
+    except Exception as e:
+        # returns exception for unsuccessful downloads
+        log_of_downloads(url, download_success=False, thread_name=threadname)
+        print(f" Download uncessessful! Error: {e}")
+
+    finally:
+        # releases semaphore after download when semaphore available
+        if semaphore:
+            semaphore.release()
+
 
 # PARALLEL video download from txt file 
-def parallel_download(video_list,output_dir):
+def parallel_download(video_list, download_path):
+     """performs asyncronous execution with threads 
+        to download videos from video_urls.txt"""
      
      # loads youtube URLs before downloading
      with open(video_list, 'r') as readurlfile:
         url_list = [url.strip() for url in readurlfile.readlines()]
 
-     print(f'Parallel Download Started....')
+     print(f' Parallel Download Started....')
      start=time.perf_counter()
 
-     # 5 concurrent download
+     # 5 concurrent download using semaphore
      max_download=5  
      p_semaphore = threading.BoundedSemaphore(max_download)
-     
-     # sets up worker threads to download 
+
+     # submits video_download func to execute concurrently using thread-pool
      with ThreadPoolExecutor(max_workers=max_download) as executor:
-         # submits video downloading to thread-pool
-         download_in_parallel = [executor.submit(video_download, url, output_dir, p_semaphore) for url in url_list]
+         parallel_downloads = [executor.submit(video_download, url, download_path, p_semaphore) 
+                                 for url in url_list]
          
          # main thread waits for all submitted downloads to be completed before moving on
-         for v_download in download_in_parallel:
-            v_download.result()
-    
+         for download in parallel_downloads:
+            download.result()
+     
      end=time.perf_counter()
-     print(f'Parallel download finished in {end-start} seconds')
+     print(f' Parallel download finished in {end-start} seconds\n')

@@ -1,3 +1,0 @@
-'File': Self Motivation  Brendan Clark  TEDxYouth@BarnstableHS.txt
-'Polarity': 0.17178571428571435
-'Subjectivity': 0.413531746031746

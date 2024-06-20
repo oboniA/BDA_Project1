@@ -12,7 +12,6 @@ def transcribe_audio(audio_file, audio_location):
         audio_path= os.path.join(audio_location, audio_file)
         
         print(f" Started sxtracting {audio_file}...")
-
         # opens an audio file and recognises it
         recognizer = sr.Recognizer()
         with sr.AudioFile(audio_path) as source:
@@ -26,7 +25,7 @@ def transcribe_audio(audio_file, audio_location):
         print(f" Error while processing file {audio_file}: {e}")
     
     # constructs output file path in .txt format
-    text_file = os.path.splitext(audio_file)[0] + '.txt'
+    text_file = os.path.splitext(audio_file)[0] + '_.txt'
     out_path = os.path.join(audio_location, text_file)
 
     try:
@@ -62,6 +61,6 @@ def audio_transcription(audio_location):
         thread.join()
 
     end=time.perf_counter()
-    print(f'Audio Transcription finished in {end-start} seconds\n')
+    print(f' Audio Transcription finished in {end-start} seconds\n')
 
 

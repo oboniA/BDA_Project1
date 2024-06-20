@@ -4,56 +4,60 @@ import os
 import time
 
 
-def folder_by_title(folder, folder_name):
-    path= os.path.join(folder, folder_name)
-    os.makedirs(path, exist_ok=True)
-    return path
-
-
-def extraction(videofile, video_location, audio_location):
+def extraction(videofile, video_location):
     """audio extraction process for each video file"""
 
     try:
-        # creates a folder for subtasks for the video
-        video_name= os.path.splitext(videofile)[0]
-        save_folder=folder_by_title(audio_location, video_name)
-            
+        # constructs video path using folder and file name
+        print(f" Start extracting audio for {videofile}....")
+        video_path = os.path.join(video_location, videofile) 
+
+        # extracts audio from video path
+        video= mp.VideoFileClip(video_path) 
+        audio = video.audio
+
         # constructs output file path in .wav format
         out_filename= os.path.splitext(videofile)[0] + ".wav"
-        out_path= os.path.join(save_folder, out_filename)
-        
-        video_path = os.path.join(video_location, videofile) # constructs video path using folder and file name
-        video= mp.VideoFileClip(video_path) # extracts audio from video path
-        video.audio.write_audiofile(out_path, codec='pcm_s16le') # pcm_s16le for 16-bit WAV output
-        print(f' Extraction complete; Audio files saved; Worker thread: {threading.current_thread().name}')
+        print(f" Saving {out_filename}.......")
+        out_path= os.path.join(video_location, out_filename)
+        audio.write_audiofile(out_path, codec='pcm_s16le') # pcm_s16le for 16-bit WAV output
+        print(f' Extraction complete; Audio file saved; Worker thread: {threading.current_thread().name}')
 
     except Exception as e:
-        print(f'An error occured while processing {videofile}: {e}')
+        print(f' An error occured while processing {videofile}: {e}')
     
-    print(f"Done")
+    print(f" Done")
 
    
-def audio_extraction(video_location, audio_location):
+def audio_extraction(video_location):
     """ Uses Threads to extract audios from every video file"""
 
     # lists all the videos in a specific directory
-    video_list= [video_name for video_name in os.listdir(video_location)]
+    # list comprehension: generates list of all subdirectories in a specified directory
+    subdirs= [os.path.join(video_location, d) for d in os.listdir(video_location) 
+              if os.path.isdir(os.path.join(video_location, d))]
 
     start=time.perf_counter()
 
     # creates threads for each process
     threads=[]
-    for videofile in video_list:
-        thread= threading.Thread(target=extraction, args=(videofile, video_location, audio_location))
-        threads.append(thread)
-        thread.start()
+    for subdir in subdirs:
+        # thread= threading.Thread(target=extraction, args=(videofile, video_location))
+        # threads.append(thread)
+        # thread.start()
+        video_files= [file for file in os.listdir(subdir) 
+                      if file.endswith('.mp4')]
+        for video_file in video_files:
+            thread= threading.Thread(target=extraction, args=(video_file, subdir))
+            threads.append(thread)
+            thread.start()
 
     # waits for all threads to complete operation
     for thread in threads:
         thread.join()
     
     end=time.perf_counter()
-    print(f'Audio Extraction finished in {end-start} seconds\n')
+    print(f' Audio Extraction finished in {end-start} seconds\n')
 
 
     

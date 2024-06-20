@@ -3,19 +3,17 @@ import os
 import threading
 import time
 
-
 def text_analysis(speech_file, speech_location):
     """sentiment analysis process from each transciption file"""
 
     try:
-        # constructs text path from folder name and file name
+        # constructs text path from folder name and file name of speech filr to read
         speech_path= os.path.join(speech_location, speech_file)
-    
-        # read speech file containing audio transcription
         with open(speech_path, 'r') as sfile:
             text = sfile.read()
 
         # sentiment extraction from transcription
+        print(f" Extracting sentiments from {speech_file}.......")
         blob = TextBlob(text)
         sentiments = blob.sentiment
         sentiment_text= f"'File': {speech_file}\n'Polarity': {sentiments.polarity}\n'Subjectivity': {sentiments.subjectivity}"
@@ -25,10 +23,10 @@ def text_analysis(speech_file, speech_location):
         out_path = os.path.join(speech_location, text_file)
         with open(out_path, 'w') as f:
             f.write(sentiment_text) # generates text file with analysis result
-        print(f'\nSentiment Analysis complete for {speech_file}; Worker Thread: {threading.current_thread().name}')
+        print(f' Sentiment Analysis complete for {speech_file}; Worker Thread: {threading.current_thread().name}')
 
     except Exception as e:
-        print(f'Error while sentiment analysis for {speech_file}: {e}')
+        print(f' Error while sentiment analysis for {speech_file}: {e}')
     
 
 def sentiment_analysis(speech_location):
@@ -42,10 +40,7 @@ def sentiment_analysis(speech_location):
     start= time.perf_counter()
     for subdir in subdirs:
         text_files= [file for file in os.listdir(subdir) 
-                     if file.endswith('.txt') 
-                     and '_sentiment_analysis.txt' not in file
-                     and '_Spanish.txt' not in file
-                     and '_emotions.txt' not in file] 
+                     if file.endswith('_.txt')]
         for text_file in text_files:
             thread= threading.Thread(target=text_analysis, args=(text_file, subdir))
             threads.append(thread)
@@ -55,7 +50,7 @@ def sentiment_analysis(speech_location):
         thread.join()
 
     end=time.perf_counter()
-    print(f'Sentiment analysis finished in {end-start} seconds\n')
+    print(f' Sentiment analysis finished in {end-start} seconds\n')
     
 
 
