@@ -1,3 +1,0 @@
-'File': Is this safest place in the world BBC News__.txt
-'Polarity': 0.07292328042328042
-'Subjectivity': 0.42583994708994716

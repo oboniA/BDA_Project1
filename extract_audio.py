@@ -18,12 +18,12 @@ def extraction(videofile, video_location, exe_mode='threads'):
         audio = video.audio
 
         # constructs output file path 
-        if exe_mode == 'threads':
+        if exe_mode == 'multiprocessing':
             out_filename= os.path.splitext(videofile)[0] + "_.wav"
         elif exe_mode == 'serial':
             out_filename= os.path.splitext(videofile)[0] + "_serial.wav"
-        elif exe_mode == 'multiprocessing':
-            out_filename= os.path.splitext(videofile)[0] + "_multiprocessing.wav"
+        elif exe_mode == 'threads':
+            out_filename= os.path.splitext(videofile)[0] + "_threads.wav"
         elif exe_mode == 'concurrency':
             out_filename= os.path.splitext(videofile)[0] + "_concurrency.wav"
         else:
@@ -36,14 +36,41 @@ def extraction(videofile, video_location, exe_mode='threads'):
 
     except Exception as e:
         print(f' An error occured while processing {videofile}: {e}')
-    print(f" Done")
+    
 
-   
 
-def audio_extraction(video_location):
-    """ Uses Threads to extract audios from every video file"""
+def audio_extraction_multiprocessing(video_location):
+    """ Uses Multiprocessing to extract audios from every video file"""
 
     # list comprehension: generates list of all subdirectories in a specified directory
+    subdirs= [os.path.join(video_location, d) 
+              for d in os.listdir(video_location) 
+              if os.path.isdir(os.path.join(video_location, d))]
+    
+    processes=[]
+    start=time.perf_counter()
+    print(f' Download started using MULTIPROCESSING......')
+    for subdir in subdirs:
+        video_files= [file for file in os.listdir(subdir) 
+                      if file.endswith('_parallel.mp4')]
+        for video_file in video_files:
+            process = multiprocessing.Process(target=extraction, args=(video_file, subdir, 'multiprocessing'))
+            processes.append(process)
+            process.start()
+
+    for process in processes:
+        process.join()
+    
+    print(f' Download complete.')
+    end=time.perf_counter()
+    time_taken=end-start
+    compare_time_log(time_taken, 'Audio Extraction Using Multiprocessing')
+    print(f' Audio Extraction using MULTIPROCESSING finished in {time_taken} seconds\n')
+   
+
+def audio_extraction_threads(video_location):
+    """ Uses Threads to extract audios from every video file"""
+
     subdirs= [os.path.join(video_location, d) 
               for d in os.listdir(video_location) 
               if os.path.isdir(os.path.join(video_location, d))]
@@ -53,7 +80,7 @@ def audio_extraction(video_location):
     threads=[]
     for subdir in subdirs:
         video_files= [file for file in os.listdir(subdir) 
-                      if file.endswith('.mp4')]
+                      if file.endswith('_parallel.mp4')]
         for video_file in video_files:
             thread= threading.Thread(target=extraction, args=(video_file, subdir, 'threads'))
             threads.append(thread)
@@ -81,7 +108,7 @@ def audio_extraction_serial(video_location):
     print(f' SERIAL download started......')
     for subdir in subdirs:
         for video in os.listdir(subdir):
-            if video.endswith('.mp4'):
+            if video.endswith('_parallel.mp4'):
                 extraction(video, subdir, exe_mode='serial')
     
     print(f' Download complete.')
@@ -92,32 +119,32 @@ def audio_extraction_serial(video_location):
 
 
 
-def audio_extraction_multiprocessing(video_location):
-    """ Uses Multiprocessing to extract audios from every video file"""
+# def audio_extraction_multiprocessing(video_location):
+#     """ Uses Multiprocessing to extract audios from every video file"""
 
-    subdirs= [os.path.join(video_location, d) 
-              for d in os.listdir(video_location) 
-              if os.path.isdir(os.path.join(video_location, d))]
+#     subdirs= [os.path.join(video_location, d) 
+#               for d in os.listdir(video_location) 
+#               if os.path.isdir(os.path.join(video_location, d))]
     
-    processes=[]
-    start=time.perf_counter()
-    print(f' Download started using MULTIPROCESSING......')
-    for subdir in subdirs:
-        video_files= [file for file in os.listdir(subdir) 
-                      if file.endswith('.mp4')]
-        for video_file in video_files:
-            process = multiprocessing.Process(target=extraction, args=(video_file, subdir, 'multiprocessing'))
-            processes.append(process)
-            process.start()
+#     processes=[]
+#     start=time.perf_counter()
+#     print(f' Download started using MULTIPROCESSING......')
+#     for subdir in subdirs:
+#         video_files= [file for file in os.listdir(subdir) 
+#                       if file.endswith('_parallel.mp4')]
+#         for video_file in video_files:
+#             process = multiprocessing.Process(target=extraction, args=(video_file, subdir, 'multiprocessing'))
+#             processes.append(process)
+#             process.start()
 
-    for process in processes:
-        process.join()
+#     for process in processes:
+#         process.join()
     
-    print(f' Download complete.')
-    end=time.perf_counter()
-    time_taken=end-start
-    compare_time_log(time_taken, 'Audio Extraction Using Multiprocessing')
-    print(f' Audio Extraction using MULTIPROCESSING finished in {time_taken} seconds\n')
+#     print(f' Download complete.')
+#     end=time.perf_counter()
+#     time_taken=end-start
+#     compare_time_log(time_taken, 'Audio Extraction Using Multiprocessing')
+#     print(f' Audio Extraction using MULTIPROCESSING finished in {time_taken} seconds\n')
 
 
 
@@ -130,10 +157,10 @@ def audio_extraction_concurrency(video_location):
     
     print(f" CONCURRENT download started ......")
     start=time.perf_counter()
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ProcessPoolExecutor() as executor:
         for subdir in subdirs:
             video_files= [file for file in os.listdir(subdir) 
-                    if file.endswith('.mp4')]
+                    if file.endswith('_parallel.mp4')]
             for video_file in video_files:
                 executor.submit(extraction, video_file, subdir, 'concurrency')
     
@@ -152,6 +179,14 @@ def compare_time_log(time_taken, method):
     logfile= 'compare_processes.txt'
     with open(logfile, 'a') as file:
         file.write(f' {method} : Extraction completed in {time_taken} seconds\n')
+
+
+def compare_processes(cmp_filename):
+
+    with open(cmp_filename, 'r') as readcmp:
+        cmplist = [cmp.strip() for cmp in readcmp.readlines()]
+        for cmp in cmplist:
+            print(cmp)
 
     
 

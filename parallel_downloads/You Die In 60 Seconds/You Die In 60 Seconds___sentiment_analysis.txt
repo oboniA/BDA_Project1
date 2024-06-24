@@ -1,3 +1,0 @@
-'File': You Die In 60 Seconds__.txt
-'Polarity': 0.12723214285714285
-'Subjectivity': 0.45223214285714286

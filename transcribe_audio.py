@@ -1,5 +1,6 @@
 import speech_recognition as sr
 import threading
+import multiprocessing
 import os
 import time
 
@@ -11,7 +12,7 @@ def transcribe_audio(audio_file, audio_location):
         # constructs audio path from folder name and file name
         audio_path= os.path.join(audio_location, audio_file)
         
-        print(f" Started sxtracting {audio_file}...")
+        print(f" Started extracting {audio_file}...")
         # opens an audio file and recognises it
         recognizer = sr.Recognizer()
         with sr.AudioFile(audio_path) as source:
@@ -46,19 +47,32 @@ def audio_transcription(audio_location):
     subdirs= [os.path.join(audio_location, d) for d in os.listdir(audio_location) 
               if os.path.isdir(os.path.join(audio_location, d))]
 
-    start=time.perf_counter()
+    # start=time.perf_counter()
 
-    threads=[]
+    # threads=[]
+    # for subdir in subdirs:
+    #     audio_files= [file for file in os.listdir(subdir) 
+    #                   if file.endswith('_.wav')]
+    #     for audio_file in audio_files:
+    #         thread= threading.Thread(target=transcribe_audio, args=(audio_file, subdir))
+    #         threads.append(thread)
+    #         thread.start()
+
+    # for thread in threads:
+    #     thread.join()
+    processes=[]
+    start=time.perf_counter()
+    print(f' Download started using MULTIPROCESSING......')
     for subdir in subdirs:
         audio_files= [file for file in os.listdir(subdir) 
                       if file.endswith('_.wav')]
         for audio_file in audio_files:
-            thread= threading.Thread(target=transcribe_audio, args=(audio_file, subdir))
-            threads.append(thread)
-            thread.start()
+            process = multiprocessing.Process(target=transcribe_audio, args=(audio_file, subdir))
+            processes.append(process)
+            process.start()
 
-    for thread in threads:
-        thread.join()
+    for process in processes:
+        process.join()
 
     end=time.perf_counter()
     print(f' Audio Transcription finished in {end-start} seconds\n')
