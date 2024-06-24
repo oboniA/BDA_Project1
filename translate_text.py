@@ -26,7 +26,7 @@ def text_translation(speech_file, speech_location):
         out_path = os.path.join(speech_location, text_file)
         with open(out_path, 'w', encoding="utf-8") as f:
             f.write(translated_str)
-        print(f' Translation complete for {speech_file}; Worker Thread: {threading.current_thread().name}')
+        print(f' Translation from English to Spanish complete for {speech_file}; Worker Thread: {threading.current_thread().name}')
             
     except Exception as e:
         print(f' Error in Translating {speech_file}: {e}')

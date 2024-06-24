@@ -8,6 +8,7 @@ from nrclex import NRCLex
 nlp= spacy.load('en_core_web_sm')
 nltk.download('punkt')
 
+
 def text_emotion(speech_file, speech_location):
     """Translation process for each transciption file to spanish"""
 

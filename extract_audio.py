@@ -119,37 +119,8 @@ def audio_extraction_serial(video_location):
 
 
 
-# def audio_extraction_multiprocessing(video_location):
-#     """ Uses Multiprocessing to extract audios from every video file"""
-
-#     subdirs= [os.path.join(video_location, d) 
-#               for d in os.listdir(video_location) 
-#               if os.path.isdir(os.path.join(video_location, d))]
-    
-#     processes=[]
-#     start=time.perf_counter()
-#     print(f' Download started using MULTIPROCESSING......')
-#     for subdir in subdirs:
-#         video_files= [file for file in os.listdir(subdir) 
-#                       if file.endswith('_parallel.mp4')]
-#         for video_file in video_files:
-#             process = multiprocessing.Process(target=extraction, args=(video_file, subdir, 'multiprocessing'))
-#             processes.append(process)
-#             process.start()
-
-#     for process in processes:
-#         process.join()
-    
-#     print(f' Download complete.')
-#     end=time.perf_counter()
-#     time_taken=end-start
-#     compare_time_log(time_taken, 'Audio Extraction Using Multiprocessing')
-#     print(f' Audio Extraction using MULTIPROCESSING finished in {time_taken} seconds\n')
-
-
-
 def audio_extraction_concurrency(video_location):
-    """ Concurrently extract audios from every video file"""
+    """ Concurrently extract audios from every video file asyncronously"""
 
     subdirs= [os.path.join(video_location, d) 
               for d in os.listdir(video_location) 

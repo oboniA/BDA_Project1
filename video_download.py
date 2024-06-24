@@ -82,8 +82,7 @@ def serial_download(video_list, download_path):
 
 # PARALLEL video download from txt file 
 def parallel_download(video_list, download_path):
-     """performs concurrent execution with threads 
-        to download videos from video_urls.txt"""
+     """performs concurrent execution with threads to download videos from video_urls.txt"""
      
      # loads youtube URLs before downloading
      with open(video_list, 'r') as readurlfile:

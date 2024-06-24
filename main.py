@@ -20,7 +20,7 @@ def main():
     # task 2
     readfile(filename)
 
-    #Task 3
+    #Task 3 and 4
     serial_download(filename, sub_folder)
     parallel_download(filename, sub_folder)
 
@@ -31,14 +31,11 @@ def main():
     audio_extraction_concurrency(sub_folder)
     compare_processes(compare_log)
 
-
     audio_transcription(sub_folder)
     sentiment_analysis(sub_folder)
     translate_to_spanish(sub_folder)
     emotion_extraction(sub_folder)
 
     
-    
-
 if __name__=="__main__":
     main()
